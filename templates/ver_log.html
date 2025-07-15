@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ver Log - {{ servidor.nombre }}</title>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400;500&display=swap" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/volt-dashboard.css') }}" rel="stylesheet">
+</head>
+<body>
+    <div class="volt-layout">
+        <!-- Sidebar -->
+        <nav class="volt-sidebar">
+            <div class="volt-sidebar-brand" style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 1.2rem 0 1.2rem 0;">
+                <img src="{{ url_for('static', filename='img/LOGO.png') }}" alt="Logo Log Analyzer" style="max-width: 70px; width: 70px; height: 70px; object-fit: contain; margin-bottom: 0.5rem;">
+            </div>
+            <ul class="volt-sidebar-nav">
+                <li class="volt-nav-item">
+                    <a href="/dashboard" class="volt-nav-link active">
+                        <span class="volt-nav-icon"><i data-feather="home"></i></span>
+                        <span class="volt-nav-text">Dashboard</span>
+                    </a>
+                </li>
+                <li class="volt-nav-item">
+                    <a href="/users" class="volt-nav-link">
+                        <span class="volt-nav-icon"><i data-feather="users"></i></span>
+                        <span class="volt-nav-text">Usuarios</span>
+                    </a>
+                </li>
+                <li class="volt-nav-item">
+                    <a href="/health" class="volt-nav-link">
+                        <span class="volt-nav-icon"><i data-feather="activity"></i></span>
+                        <span class="volt-nav-text">Estado del Sistema</span>
+                    </a>
+                </li>
+                <li class="volt-nav-item">
+                    <a href="/reportes" class="volt-nav-link">
+                        <span class="volt-nav-icon"><i data-feather="bar-chart-2"></i></span>
+                        <span class="volt-nav-text">Reportes</span>
+                    </a>
+                </li>
+                <li class="volt-nav-item">
+                    <a href="/configuracion" class="volt-nav-link">
+                        <span class="volt-nav-icon"><i data-feather="settings"></i></span>
+                        <span class="volt-nav-text">Configuración</span>
+                    </a>
+                </li>
+                <li class="volt-nav-item" style="margin-top: auto; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 1rem;">
+                    <a href="{{ url_for('logout') }}" class="volt-nav-link">
+                        <span class="volt-nav-icon"><i data-feather="log-out"></i></span>
+                        <span class="volt-nav-text">Cerrar Sesión</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="volt-main-content">
+            <!-- Top Navbar -->
+            <nav class="volt-navbar">
+                <button class="volt-navbar-toggler">
+                    ☰
+                </button>
+                <ul class="volt-navbar-nav">
+                    <li class="nav-item">
+                        <a href="/dashboard" class="volt-btn volt-btn-outline-primary"> Volver al Dashboard</a>
+                    </li>
+                </ul>
+            </nav>
+
+            <!-- Page Content -->
+            <div class="volt-page-content">
+                <div class="volt-page-header">
+                    <h1 class="volt-page-title"> Visualizar Log</h1>
+                    <p class="volt-page-subtitle">{{ servidor.nombre }} - {{ servidor.ruta_log }}</p>
+                </div>
+
+                <!-- Log Viewer Card -->
+                <div class="volt-card" style="background: #fff; border-radius: 1.2rem; box-shadow: 0 2px 16px #8c05fa18; border-top: 5px solid transparent; position: relative;">
+                    <div style="position: absolute; top: 0; left: 0; width: 100%; height: 5px; border-top-left-radius: 1.2rem; border-top-right-radius: 1.2rem; background: linear-gradient(90deg, #4b6cf1 0%, #5818ec 50%, #8c05fa 100%);"></div>
+                    <div class="volt-card-header">
+                        <div class="volt-d-flex volt-justify-content-between volt-align-items-center">
+                            <h3 class="volt-card-title" style="color: #b18fff; display: flex; align-items: center; gap: 0.5rem;"><i data-feather='file-text'></i>Contenido del Log</h3>
+                            <div style="display: flex; gap: 0.7rem; flex-wrap: wrap; align-items: center;">
+                                <a href="/descargar_log/{{ servidor.id }}" class="volt-btn volt-btn-success" data-volt-tooltip="Descargar log completo" style="background: #4caf50; color: #fff; border-radius: 1.2rem; display: flex; align-items: center; gap: 0.3rem; min-width: 140px; justify-content: center;">
+                                    <i data-feather="download"></i> Descargar Log
+                                </a>
+                                <button id="copyAllBtn" class="volt-btn volt-btn-outline-primary" data-volt-copy-logs data-volt-tooltip="Copiar todo el contenido" style="display: flex; align-items: center; gap: 0.3rem; min-width: 120px; justify-content: center;">
+                                    <i data-feather="copy"></i> Copiar Todo
+                                </button>
+                                <button class="volt-btn volt-btn-primary" onclick="window.location.reload()" data-volt-tooltip="Actualizar contenido" style="background: linear-gradient(135deg, #8c05faa9 0%, #3e05dbb0 100%); border: none; color: #fff; font-weight:bold; border-radius: 1.2rem; display: flex; align-items: center; gap: 0.3rem; min-width: 120px; justify-content: center;">
+                                    <i data-feather="refresh-cw"></i> Actualizar
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="volt-card-body">
+                        <!-- Search Box -->
+                        <div class="volt-search-box">
+                            <input type="text" class="volt-form-control volt-search-input" placeholder="Buscar en el log..." id="logSearch">
+                            <span class="volt-search-icon"></span>
+                        </div>
+                        
+                        <!-- Log Viewer -->
+                        <div class="volt-log-viewer">
+                            {% for linea in lineas %}
+                            <div class="volt-log-line {% if 'error' in linea.lower() or 'fatal' in linea.lower() %}volt-log-error{% elif 'warning' in linea.lower() or 'warn' in linea.lower() %}volt-log-warning{% endif %}">{{ linea.strip() }}</div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <div class="volt-card-footer">
+                        <div class="volt-text-center volt-text-muted">
+                             Mostrando las últimas 50 líneas del archivo | 
+                            Total de líneas: {{ lineas|length }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+    
+    <script src="{{ url_for('static', filename='js/volt-dashboard.js') }}"></script>
+    <script src="https://unpkg.com/feather-icons"></script>
+    <script>feather.replace();</script>
+</body>
+</html>

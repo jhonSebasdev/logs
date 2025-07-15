@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Log Analyzer</title>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/volt-dashboard.css') }}" rel="stylesheet">
+</head>
+<body>
+    <div class="volt-layout">
+        <!-- Sidebar -->
+        <nav class="volt-sidebar">
+            <div class="volt-sidebar-brand" style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 1.2rem 0 1.2rem 0;">
+                <img src="{{ url_for('static', filename='img/LOGO.png') }}" alt="Logo Log Analyzer" style="max-width: 70px; width: 70px; height: 70px; object-fit: contain; margin-bottom: 0.5rem;">
+            </div>
+            <ul class="volt-sidebar-nav">
+                <li class="volt-nav-item">
+                    <a href="/dashboard" class="volt-nav-link active">
+                        <span class="volt-nav-icon"><i data-feather="home"></i></span>
+                        <span class="volt-nav-text">Dashboard</span>
+                    </a>
+                </li>
+                <li class="volt-nav-item">
+                    <a href="/users" class="volt-nav-link">
+                        <span class="volt-nav-icon"><i data-feather="users"></i></span>
+                        <span class="volt-nav-text">Usuarios</span>
+                    </a>
+                </li>
+                <li class="volt-nav-item">
+                    <a href="/health" class="volt-nav-link">
+                        <span class="volt-nav-icon"><i data-feather="activity"></i></span>
+                        <span class="volt-nav-text">Estado del Sistema</span>
+                    </a>
+                </li>
+                <li class="volt-nav-item">
+                    <a href="/reportes" class="volt-nav-link">
+                        <span class="volt-nav-icon"><i data-feather="bar-chart-2"></i></span>
+                        <span class="volt-nav-text">Reportes</span>
+                    </a>
+                </li>
+                <li class="volt-nav-item">
+                    <a href="/configuracion" class="volt-nav-link">
+                        <span class="volt-nav-icon"><i data-feather="settings"></i></span>
+                        <span class="volt-nav-text">Configuración</span>
+                    </a>
+                </li>
+                <li class="volt-nav-item" style="margin-top: auto; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 1rem;">
+                    <a href="{{ url_for('logout') }}" class="volt-nav-link">
+                        <span class="volt-nav-icon"><i data-feather="log-out"></i></span>
+                        <span class="volt-nav-text">Cerrar Sesión</span>
+                    </a>
+                </li>
+            </ul>
+            <!-- Recuadro inferior tipo "History available" -->
+            <div class="sidebar-info-card">
+                <div class="sidebar-info-icon"><i data-feather="clock"></i></div>
+                <div class="sidebar-info-content">
+                    <div class="sidebar-info-title">Historial disponible</div>
+                    <div class="sidebar-info-desc">Consulta tus reportes semanales de inspección</div>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="volt-main-content">
+            <!-- Top Navbar -->
+            <nav class="volt-navbar">
+                <button class="volt-navbar-toggler">
+                    ☰
+                </button>
+                <ul class="volt-navbar-nav">
+                    <li class="nav-item">
+                        <span class="volt-text-muted">👋 Hola, {{ session.username }}!</span>
+                    </li>
+                </ul>
+            </nav>
+
+            <!-- Page Content -->
+            <div class="volt-page-content">
+                <div class="volt-page-header">
+                    <h1 class="volt-page-title">Panel de Control</h1>
+                    <p class="volt-page-subtitle">Gestión y monitoreo de servidores de logs</p>
+                </div>
+
+                <!-- Stats Cards -->
+                <div class="volt-d-flex" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; margin-bottom: 2rem;">
+                    <div class="volt-stats-card" style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 2rem 1rem;">
+                        <span class="volt-stats-icon" style="display: flex; align-items: center; justify-content: center; margin-bottom: 0.5rem;"><i data-feather="server" style="width: 40px; height: 40px; color: #8c05fa3f;"></i></span>
+                        <span class="volt-stats-number">{{ servidores|length }}</span>
+                        <span class="volt-stats-label">Servidores Registrados</span>
+                    </div>
+                    <div class="volt-stats-card" style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 2rem 1rem;">
+                        <span class="volt-stats-icon" style="display: flex; align-items: center; justify-content: center; margin-bottom: 0.5rem;"><i data-feather="check-circle" style="width: 40px; height: 40px; color: #8c05fa41;"></i></span>
+                        <span class="volt-stats-number">{{ servidores|length }}</span>
+                        <span class="volt-stats-label">Servidores Activos</span>
+                    </div>
+                </div>
+
+                <!-- Add Server Card -->
+                <div class="volt-card">
+                    <div class="volt-card-header">
+                        <h3 class="volt-card-title"><i data-feather="plus" style="margin-right: 0.5rem; color: #8c05fa83;"></i>Agregar Nuevo Servidor</h3>
+                    </div>
+                    <div class="volt-card-body">
+                        <form method="POST" action="{{ url_for('add_server') }}" data-volt-validate>
+                            <!-- Fila 1: Nombre, IP, Protocolo -->
+                            <div style="display: flex; gap: 1rem; flex-wrap: wrap; margin-bottom: 1.5rem;">
+                                <div class="volt-form-group volt-mb-0" style="flex:1 1 220px; min-width:200px;">
+                                    <label for="nombre" class="volt-form-label"><i data-feather="edit-3" style="margin-right: 0.4rem; color: #8c05fa83;"></i>Nombre del Servidor</label>
+                                    <input type="text" name="nombre" class="volt-form-control" placeholder="Ej: Servidor Web Producción" required>
+                                </div>
+                                <div class="volt-form-group volt-mb-0" style="flex:1 1 180px; min-width:180px;">
+                                    <label for="ip_servidor" class="volt-form-label"><i data-feather="globe" style="margin-right: 0.4rem; color: #8c05fa83;"></i>Dirección IP</label>
+                                    <input type="text" name="ip_servidor" class="volt-form-control" placeholder="Ej: 192.168.1.100" required pattern="^(?:[0-9]{1,3}\.){3}[0-9]{1,3}$|^localhost$|^127\.0\.0\.1$">
+                                </div>
+                                <div class="volt-form-group volt-mb-0" style="flex:1 1 160px; min-width:160px;">
+                                    <label for="protocolo" class="volt-form-label"><i data-feather="link" style="margin-right: 0.4rem; color: #8c05fa83;"></i>Protocolo de Conexión</label>
+                                    <select name="protocolo" class="volt-form-control" required>
+                                        <option value="SSH">SSH (Puerto 22)</option>
+                                        <option value="SFTP">SFTP (Puerto 22)</option>
+                                        <option value="FTP">FTP (Puerto 21)</option>
+                                        <option value="SMB">SMB/CIFS</option>
+                                        <option value="LOCAL">Local</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <!-- Fila 2: Usuario, Contraseña, Puerto -->
+                            <div style="display: flex; gap: 1rem; flex-wrap: wrap; margin-bottom: 1.5rem;">
+                                <div class="volt-form-group volt-mb-0" style="flex:1 1 180px; min-width:180px; color: #8c05fa83;">
+                                    <label for="usuario_servidor" class="volt-form-label"><i data-feather="user" style="margin-right: 0.4rem; color: #8c05fa83;"></i>Usuario del Servidor</label>
+                                    <input type="text" name="usuario_servidor" class="volt-form-control" placeholder="Ej: root, admin, ubuntu" required>
+                                </div>
+                                <div class="volt-form-group volt-mb-0" style="flex:1 1 180px; min-width:180px;">
+                                    <label for="password_servidor" class="volt-form-label"><i data-feather="lock" style="margin-right: 0.4rem; color: #8c05fa83;"></i>Contraseña</label>
+                                    <input type="password" name="password_servidor" class="volt-form-control" placeholder="Contraseña del servidor" required>
+                                </div>
+                                <div class="volt-form-group volt-mb-0" style="flex:1 1 120px; min-width:120px;">
+                                    <label for="puerto" class="volt-form-label"><i data-feather="cpu" style="margin-right: 0.4rem; color: #8c05fa83;"></i>Puerto</label>
+                                    <input type="number" name="puerto" class="volt-form-control" placeholder="22" value="22" min="1" max="65535">
+                                </div>
+                            </div>
+                            <!-- Fila 3: Botón Probar Conexión y resultado -->
+                            <div style="display: flex; justify-content: flex-end; align-items: center; gap: 1rem; margin-bottom: 1.5rem;">
+                                <button type="button" class="volt-btn volt-btn-primary" style="background: linear-gradient(135deg, #8c05faa9 0%, #3e05dbb0 100%); border: none; color: #fff; font-weight:bold; font-size:1rem; padding:0.8rem 2.2rem; border-radius: 1.5rem; box-shadow: 0 4px 24px #8c05fa22; display:flex; align-items:center; gap:0.7rem; transition: box-shadow 0.2s;" onclick="probarConexion()">
+                                    <i data-feather="link" style="margin-right: 0.5rem; color: #fff;"></i> Probar Conexión
+                                </button>
+                                <div id="resultadoConexion" style="min-width: 180px;"></div>
+                            </div>
+                            <!-- Fila 4: Ruta del log y botones, oculto por defecto -->
+                            <div id="seccionRutaLog" style="display: none;">
+                                <div style="display: grid; grid-template-columns: 1fr; gap: 1rem; align-items: end;">
+                                    <div class="volt-form-group">
+                                        <label for="ruta_log" class="volt-form-label"><i data-feather="file-text" style="margin-right: 0.4rem; color: #8c05fa83;"></i>Ruta del Archivo de Log</label>
+                                        <input type="text" name="ruta_log" class="volt-form-control" placeholder="/var/log/syslog">
+                                    </div>
+                                    <pre id="contenidoLog" style="margin-top: 1rem; background: #f5f5f5; padding: 1rem; max-height: 300px; overflow-y: auto;"></pre>
+                                    <button type="submit" class="volt-btn volt-btn-success" style="padding: 0.75rem 1.5rem;">
+                                        <i data-feather="plus-circle" style="margin-right: 0.5rem; color: #8c05fa83;"></i> Agregar Servidor
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="volt-card-footer">
+                        <div class="volt-text-muted" style="font-size: 0.875rem;">
+                            <i data-feather="info" style="margin-right: 0.4rem; color: #8c05fa83;"></i><strong>Nota:</strong> Las contraseñas se almacenan de forma segura y encriptada. 
+                            Para servidores locales, usa "LOCAL" como protocolo y "127.0.0.1" como IP.
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Servers List -->
+                <div class="volt-card">
+                    <div class="volt-card-header">
+                        <h3 class="volt-card-title">
+                            <i data-feather="server" style="margin-right: 0.5rem; color: #8c05fa83;"></i>
+                            Servidores Registrados
+                        </h3>
+                    </div>
+                    <div class="volt-card-body">
+                        {% if servidores %}
+                        <div class="volt-server-grid">
+                            {% for servidor in servidores %}
+                            <div class="volt-server-card" style="background: #fff; border-radius: 1.2rem; box-shadow: 0 2px 16px #8c05fa18; border: none; margin-bottom: 1.2rem; position: relative; overflow: hidden; min-width: 260px; max-width: 320px;">
+                                <div style="height: 5px; width: 100%; background: linear-gradient(90deg, #b8c6ff 0%, #8c05fa 100%); position: absolute; top: 0; left: 0; border-top-left-radius: 1.2rem; border-top-right-radius: 1.2rem;"></div>
+                                <div style="padding: 1.2rem 1rem 1rem 1rem;">
+                                    <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;">
+                                        <i data-feather="server" style="color: #8c05fa99; width: 20px; height: 16px;"></i>
+                                        <span style="font-size: 1.05rem; font-weight: bold; color: #222;">{{ servidor.nombre }}</span>
+                                    </div>
+                                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.2rem 0.7rem; font-size: 0.92rem; color: #444; margin-bottom: 0.5rem;">
+                                        <div style="display: flex; align-items: center; gap: 0.3rem;"><i data-feather="globe" style="color: #8c05fa99; width: 13px; height: 13px;"></i><span>IP:</span></div>
+                                        <div>{{ servidor.ip_servidor if servidor.ip_servidor else 'N/A' }}</div>
+                                        <div style="display: flex; align-items: center; gap: 0.3rem;"><i data-feather="user" style="color: #8c05fa99; width: 13px; height: 13px;"></i><span>Usuario:</span></div>
+                                        <div>{{ servidor.usuario_servidor if servidor.usuario_servidor else 'N/A' }}</div>
+                                        <div style="display: flex; align-items: center; gap: 0.3rem;"><i data-feather="link" style="color: #8c05fa99; width: 13px; height: 13px;"></i><span>Protocolo:</span></div>
+                                        <div>{{ servidor.protocolo if servidor.protocolo else 'N/A' }}</div>
+                                        <div style="display: flex; align-items: center; gap: 0.3rem;"><i data-feather="cpu" style="color: #8c05fa99; width: 13px; height: 13px;"></i><span>Puerto:</span></div>
+                                        <div>{{ servidor.puerto if servidor.puerto else 'N/A' }}</div>
+                                    </div>
+                                    <div style="background: #f3eaff; border-radius: 0.5rem; padding: 0.3rem 0.7rem; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.4rem; font-size: 0.91rem;">
+                                        <i data-feather="folder" style="color: #8c05fa99; width: 13px; height: 13px;"></i>
+                                        <span style="color: #8c05fa;">{{ servidor.ruta_log }}</span>
+                                    </div>
+                                    {% if servidor.estado %}
+                                    <div style="margin-bottom: 0.7rem;">
+                                        <span class="volt-badge volt-badge-{{ 'success' if servidor.estado == 'ACTIVO' else 'warning' if servidor.estado == 'INACTIVO' else 'danger' }}" style="font-size: 0.92rem; border-radius: 0.9rem; padding: 0.25rem 0.9rem; background: #e0f7fa; color: #0097a7;">
+                                            {{ '🟢 ACTIVO' if servidor.estado == 'ACTIVO' else '🟡 INACTIVO' if servidor.estado == 'INACTIVO' else '🔴 ERROR' }}
+                                        </span>
+                                    </div>
+                                    {% endif %}
+                                    <div style="display: flex; gap: 0.5rem; justify-content: center; align-items: center; margin-top: 0.5rem;">
+                                        <a href="{{ url_for('ver_log', servidor_id=servidor.id) }}" class="volt-btn volt-btn-primary" style="background: #b8c6ff; color: #3e05db; border-radius: 0.9rem; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 0.4rem; padding: 0.4rem 1rem; font-size: 0.93rem; min-width: 25px; box-shadow: 0 1px 4px #b8c6ff33; border: none;">
+                                            <i style="color: #3e05db86; width: 15px; height: 15px;"></i>Ver Log
+                                        </a>
+                                        <button class="volt-btn volt-btn-warning" data-volt-modal="editarModal{{ servidor.id }}" data-volt-tooltip="Editar configuración" style="background: #ffe0b2; color: #ff9800; border-radius: 0.9rem; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 0.4rem; padding: 0.4rem 1rem; font-size: 0.93rem; min-width: 80px; box-shadow: 0 1px 4px #ffe0b233; border: none;">
+                                            <i data-feather="edit-3" style="color: #ff990065; width: 15px; height: 15px;"></i> Editar
+                                        </button>
+                                        <button class="volt-btn volt-btn-danger" data-volt-modal="eliminarModal{{ servidor.id }}" data-volt-tooltip="Eliminar servidor" style="background: #ffd6e0; color: #ff1744; border-radius: 0.9rem; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 0.4rem; padding: 0.4rem 1rem; font-size: 0.93rem; min-width: 80px; box-shadow: 0 1px 4px #ffd6e033; border: none;">
+                                            <i data-feather="trash-2" style="color: #ff174544; width: 15px; height: 15px;"></i> Eliminar
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Modal de edición -->
+                            <div class="volt-modal" id="editarModal{{ servidor.id }}">
+                                <div class="volt-modal-content" style="max-width: 700px;">
+                                    <h3 style="color: var(--volt-primary); margin-bottom: 1.5rem;">✏️ Editar Servidor</h3>
+                                    <form method="POST" action="{{ url_for('editar_log', servidor_id=servidor.id) }}" data-volt-validate>
+                                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+                                            <div class="volt-form-group volt-mb-0">
+                                                <label class="volt-form-label">🏷️ Nombre del Servidor</label>
+                                                <input type="text" name="nombre" class="volt-form-control" value="{{ servidor.nombre }}" required>
+                                            </div>
+                                            <div class="volt-form-group volt-mb-0">
+                                                <label class="volt-form-label">🌐 Dirección IP</label>
+                                                <input type="text" name="ip_servidor" class="volt-form-control" value="{{ servidor.ip_servidor if servidor.ip_servidor else '' }}" required>
+                                            </div>
+                                        </div>
+                                        
+                                        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+                                            <div class="volt-form-group volt-mb-0">
+                                                <label class="volt-form-label">👤 Usuario del Servidor</label>
+                                                <input type="text" name="usuario_servidor" class="volt-form-control" value="{{ servidor.usuario_servidor if servidor.usuario_servidor else '' }}" required>
+                                            </div>
+                                            <div class="volt-form-group volt-mb-0">
+                                                <label class="volt-form-label">🔒 Contraseña</label>
+                                                <input type="password" name="password_servidor" class="volt-form-control" placeholder="Nueva contraseña (dejar vacío para mantener)">
+                                            </div>
+                                            <div class="volt-form-group volt-mb-0">
+                                                <label class="volt-form-label">🔌 Puerto</label>
+                                                <input type="number" name="puerto" class="volt-form-control" value="{{ servidor.puerto if servidor.puerto else '22' }}" min="1" max="65535">
+                                            </div>
+                                        </div>
+                                        
+                                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+                                            <div class="volt-form-group volt-mb-0">
+                                                <label class="volt-form-label">🔗 Protocolo</label>
+                                                <select name="protocolo" class="volt-form-control" required>
+                                                    <option value="SSH" {{ 'selected' if servidor.protocolo == 'SSH' else '' }}>SSH (Puerto 22)</option>
+                                                    <option value="SFTP" {{ 'selected' if servidor.protocolo == 'SFTP' else '' }}>SFTP (Puerto 22)</option>
+                                                    <option value="FTP" {{ 'selected' if servidor.protocolo == 'FTP' else '' }}>FTP (Puerto 21)</option>
+                                                    <option value="SMB" {{ 'selected' if servidor.protocolo == 'SMB' else '' }}>SMB/CIFS</option>
+                                                    <option value="LOCAL" {{ 'selected' if servidor.protocolo == 'LOCAL' else '' }}>Local</option>
+                                                </select>
+                                            </div>
+                                            <div class="volt-form-group volt-mb-0">
+                                                <label class="volt-form-label">📊 Estado</label>
+                                                <select name="estado" class="volt-form-control">
+                                                    <option value="ACTIVO" {{ 'selected' if servidor.estado == 'ACTIVO' else '' }}>🟢 ACTIVO</option>
+                                                    <option value="INACTIVO" {{ 'selected' if servidor.estado == 'INACTIVO' else '' }}>🟡 INACTIVO</option>
+                                                    <option value="ERROR" {{ 'selected' if servidor.estado == 'ERROR' else '' }}>🔴 ERROR</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="volt-form-group">
+                                            <label class="volt-form-label">📁 Ruta del Log</label>
+                                            <input type="text" name="ruta_log" class="volt-form-control" value="{{ servidor.ruta_log }}" required>
+                                        </div>
+                                        
+                                        <div class="volt-d-flex" style="gap: 0.75rem; justify-content: flex-end; margin-top: 1.5rem;">
+                                            <button type="submit" class="volt-btn volt-btn-warning">💾 Guardar Cambios</button>
+                                            <button type="button" class="volt-btn volt-btn-outline-primary" data-volt-modal-close>❌ Cancelar</button>
+                                        </div>
+                                    </form> 
+                                </div>
+                            </div>
+
+                            <!-- Modal de confirmación para eliminar -->
+                            <div class="volt-modal" id="eliminarModal{{ servidor.id }}">
+                                <div class="volt-modal-content">
+                                    <h3 style="color: var(--volt-danger); margin-bottom: 1.5rem;">🗑️ Eliminar Servidor</h3>
+                                    <div style="margin-bottom: 1.5rem;">
+                                        <p>¿Estás seguro que deseas eliminar el servidor <strong>{{ servidor.nombre }}</strong>?</p>
+                                        <div class="volt-alert volt-alert-warning">
+                                            ⚠️ Esta acción no se puede deshacer.
+                                        </div>
+                                    </div>
+                                    <form method="POST" action="{{ url_for('eliminar_log', servidor_id=servidor.id) }}">
+                                        <div class="volt-d-flex" style="gap: 0.75rem; justify-content: flex-end;">
+                                            <button type="submit" class="volt-btn volt-btn-danger">🗑️ Sí, Eliminar</button>
+                                            <button type="button" class="volt-btn volt-btn-outline-primary" data-volt-modal-close>❌ Cancelar</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        {% else %}
+                        <div class="volt-text-center" style="padding: 3rem 1rem;">
+                            <h4 class="volt-text-muted volt-mb-3">📭 No hay servidores registrados</h4>
+                            <p class="volt-text-muted">Agrega tu primer servidor usando el formulario de arriba</p>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+    
+    <script src="{{ url_for('static', filename='js/volt-dashboard.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    <script src="https://unpkg.com/feather-icons"></script>
+    <script>feather.replace();</script>
+</body>
+</html>

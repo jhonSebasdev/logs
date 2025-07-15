@@ -1,0 +1,43 @@
+version: '3.8'
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: mysql_logs
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: log_analyzer
+      MYSQL_USER: appuser
+      MYSQL_PASSWORD: apppassword
+    ports:
+      - "3307:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./basededatos/LOGS_UPDATED.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - logs_network
+
+  web:
+    build: .
+    container_name: flask_logs
+    ports:
+      - "5000:5000"
+    depends_on:
+      - mysql
+    environment:
+      - FLASK_ENV=development  
+      - DB_HOST=mysql
+      - DB_USER=appuser
+      - DB_PASSWORD=apppassword
+      - DB_NAME=log_analyzer
+    volumes:
+      - ./:/app  
+    networks:
+      - logs_network
+
+volumes:
+  mysql_data:
+
+networks:
+  logs_network:
+    driver: bridge

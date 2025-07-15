@@ -1,0 +1,109 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Log Analyzer</title>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/volt-dashboard.css') }}" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(135deg, var(--volt-primary) 0%, #5a67d8 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+        .login-container {
+            background: var(--volt-white);
+            border-radius: var(--volt-border-radius);
+            box-shadow: var(--volt-box-shadow-lg);
+            padding: 3rem;
+            width: 100%;
+            max-width: 400px;
+            backdrop-filter: blur(10px);
+        }
+        .login-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        .login-title {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--volt-gray-800);
+            margin-bottom: 0.5rem;
+        }
+        .login-subtitle {
+            color: var(--volt-gray-600);
+            font-size: 0.9rem;
+        }
+        .login-form .volt-btn {
+            width: 100%;
+            padding: 0.875rem;
+            font-size: 1rem;
+            font-weight: 600;
+        }
+        .login-footer {
+            text-align: center;
+            margin-top: 2rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--volt-border-color);
+        }
+        .login-footer a {
+            color: var(--volt-primary);
+            text-decoration: none;
+        }
+        .login-footer a:hover {
+            color: #5a67d8;
+        }
+    </style>
+    <style>
+@keyframes float {
+  0% { transform: translateY(0); }
+  50% { transform: translateY(-15px); }
+  100% { transform: translateY(0); }
+}
+.img-float {
+  animation: float 3.2s ease-in-out infinite;
+}
+</style>
+</head>
+<body style="background: linear-gradient(135deg, #ede9fe 0%, #c7bfff 100%); min-height: 100vh; margin: 0;">
+    <div style="min-height: 100vh; display: flex; align-items: stretch; justify-content: center;">
+        <!-- Columna Izquierda: Imagen y fondo -->
+        <div style="flex: 1.1; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, #b8c6ff 0%, #6f86d6 100%); border-top-left-radius: 2.5rem; border-bottom-left-radius: 2.5rem; min-width: 320px; max-width: 520px;">
+            <img src='{{ url_for('static', filename='img/PERSONAJE.png') }}' alt='Personaje Log Analyzer' class='img-float' style='max-width: 1000px; width: 150%; height: auto; display: block; margin: 0 auto; filter: drop-shadow(0 12px 48px #8c05fa33);'>
+        </div>
+        <!-- Columna Derecha: Formulario -->
+        <div style="flex: 1.2; display: flex; align-items: center; justify-content: center; background: #fff; border-top-right-radius: 2.5rem; border-bottom-right-radius: 2.5rem; box-shadow: 0 8px 40px #8c05fa18; min-width: 340px;">
+            <div class="login-container volt-fade-in" style="background: transparent; box-shadow: none; padding: 3.5rem 2.5rem; max-width: 400px; width: 100%; display: flex; flex-direction: column; align-items: center;">
+                <div class="login-header" style="text-align: left; margin-bottom: 2.2rem; width: 100%;">
+                    <h1 class="login-title" style="font-size: 2.1rem; font-weight: 800; color: #8c05fa; margin-bottom: 0.5rem;">¡Bienvenido a <br>.Log<br><span style='color:#6c63ff; font-weight:600; font-size:1.1rem;'>software especializado en análisis de logs</span></h1>
+                </div>
+                <form method="POST" class="login-form" data-volt-validate style="width: 100%;">
+                    <div class="volt-form-group">
+                        <label for="usuario" class="volt-form-label">Usuario</label>
+                        <input type="text" class="volt-form-control" id="usuario" name="usuario" required placeholder="Ingrese su correo electrónico">
+                    </div>
+                    <div class="volt-form-group">
+                        <label for="clave" class="volt-form-label">Contraseña</label>
+                        <input type="password" class="volt-form-control" id="clave" name="clave" required placeholder="Ingrese su contraseña">
+                    </div>
+                    {% if error %}
+                    <div class="volt-alert volt-alert-danger">
+                        <strong> Error de autenticación:</strong> {{ error }}
+                    </div>
+                    {% endif %}
+                    <button type="submit" class="volt-btn volt-btn-primary" style="width: 100%; padding: 0.95rem; font-size: 1.1rem; font-weight: 700; background: linear-gradient(90deg, #8c05fa 0%, #6c63ff 100%); border: none; border-radius: 1.2rem; margin-top: 1.2rem;">Iniciar Sesión</button>
+                </form>
+                <div class="login-footer" style="text-align: left; margin-top: 2.5rem; padding-top: 1.5rem; border-top: 1px solid #ede9fe; width: 100%;">
+                    <small class="volt-text-muted">¿Problemas para acceder? <a href="/health" style="color: #8c05fa;">Verificar estado del sistema</a></small>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="{{ url_for('static', filename='js/volt-dashboard.js') }}"></script>
+</body>
+</html>

@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Usuarios - Log Analyzer</title>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/volt-dashboard.css') }}" rel="stylesheet">
+</head>
+<body>
+    <div class="volt-layout">
+        <!-- Sidebar -->
+        <nav class="volt-sidebar">
+            <div class="volt-sidebar-brand" style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 1.2rem 0 1.2rem 0;">
+                <img src="{{ url_for('static', filename='img/LOGO.png') }}" alt="Logo Log Analyzer" style="max-width: 70px; width: 70px; height: 70px; object-fit: contain; margin-bottom: 0.5rem;">
+            </div>
+            <ul class="volt-sidebar-nav">
+                <li class="volt-nav-item">
+                    <a href="/dashboard" class="volt-nav-link">
+                        <span class="volt-nav-icon"><i data-feather="home"></i></span>
+                        <span class="volt-nav-text">Dashboard</span>
+                    </a>
+                </li>
+                <li class="volt-nav-item">
+                    <a href="/users" class="volt-nav-link active">
+                        <span class="volt-nav-icon"><i data-feather="users"></i></span>
+                        <span class="volt-nav-text">Usuarios</span>
+                    </a>
+                </li>
+                <li class="volt-nav-item">
+                    <a href="/health" class="volt-nav-link">
+                        <span class="volt-nav-icon"><i data-feather="activity"></i></span>
+                        <span class="volt-nav-text">Estado del Sistema</span>
+                    </a>
+                </li>
+                <li class="volt-nav-item">
+                    <a href="/reportes" class="volt-nav-link">
+                        <span class="volt-nav-icon"><i data-feather="bar-chart-2"></i></span>
+                        <span class="volt-nav-text">Reportes</span>
+                    </a>
+                </li>
+                <li class="volt-nav-item">
+                    <a href="/configuracion" class="volt-nav-link">
+                        <span class="volt-nav-icon"><i data-feather="settings"></i></span>
+                        <span class="volt-nav-text">Configuración</span>
+                    </a>
+                </li>
+                <li class="volt-nav-item" style="margin-top: auto; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 1rem;">
+                    <a href="{{ url_for('logout') }}" class="volt-nav-link">
+                        <span class="volt-nav-icon"><i data-feather="log-out"></i></span>
+                        <span class="volt-nav-text">Cerrar Sesión</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="volt-main-content">
+            <!-- Top Navbar -->
+            <nav class="volt-navbar">
+                <button class="volt-navbar-toggler">
+                    ☰
+                </button>
+                <ul class="volt-navbar-nav">
+                    <li class="nav-item">
+                        <span class="volt-text-muted">👋 Hola, {{ session.username }}!</span>
+                    </li>
+                </ul>
+            </nav>
+
+            <!-- Page Content -->
+            <div class="volt-page-content">
+                <div class="volt-page-header">
+                    <h1 class="volt-page-title">Gestión de Usuarios</h1>
+                    <p class="volt-page-subtitle">Administra los usuarios del sistema</p>
+                </div>
+
+                <div style="margin-bottom: 1.5rem;">
+                    <button class="volt-btn volt-btn-primary" onclick="toggleCreateUserForm()">
+                        <span>➕ Crear Usuario</span>
+                    </button>
+                </div>
+
+            <!-- Messages -->
+            {% if error %}
+            <div class="volt-alert volt-alert-danger">
+                <span class="volt-alert-icon">⚠️</span>
+                <span class="volt-alert-text">{{ error }}</span>
+            </div>
+            {% endif %}
+
+            {% if request.args.get('success') %}
+            <div class="volt-alert volt-alert-success">
+                <span class="volt-alert-icon">✅</span>
+                <span class="volt-alert-text">{{ request.args.get('success') }}</span>
+            </div>
+            {% endif %}
+
+            {% if request.args.get('error') %}
+            <div class="volt-alert volt-alert-danger">
+                <span class="volt-alert-icon">⚠️</span>
+                <span class="volt-alert-text">{{ request.args.get('error') }}</span>
+            </div>
+            {% endif %}
+
+            <!-- Create User Form -->
+            <div id="createUserForm" class="volt-card" style="display: none; margin-bottom: 2rem;">
+                <div class="volt-card-header">
+                    <h3 class="volt-card-title">Crear Nuevo Usuario</h3>
+                </div>
+                <div class="volt-card-body">
+                    <form method="POST" action="/create_user">
+                        <div class="volt-form-row">
+                            <div class="volt-form-group">
+                                <label for="username" class="volt-form-label">Nombre de Usuario</label>
+                                <input type="text" id="username" name="username" class="volt-form-control" required>
+                            </div>
+                        </div>
+                        <div class="volt-form-row">
+                            <div class="volt-form-group">
+                                <label for="password" class="volt-form-label">Contraseña</label>
+                                <input type="password" id="password" name="password" class="volt-form-control" required minlength="4">
+                            </div>
+                            <div class="volt-form-group">
+                                <label for="confirm_password" class="volt-form-label">Confirmar Contraseña</label>
+                                <input type="password" id="confirm_password" name="confirm_password" class="volt-form-control" required minlength="4">
+                            </div>
+                        </div>
+                        <div class="volt-form-actions">
+                            <button type="submit"  style="background: #4e6ae63f; color: #ffffff; border-radius: 0.9rem; font-weight: 600;" class="volt-btn volt-btn-success">
+                                <span>Crear Usuario</span>
+                            </button>
+                            <button type="button"  class="volt-btn volt-btn-secondary"  style ="background: #e0575783; color: #ffffff; border-radius: 0.9rem; font-weight: 600;" onclick="toggleCreateUserForm()">
+                                <span>Cancelar</span>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Users List -->
+            <div class="volt-card">
+                <div class="volt-card-header" style="display: flex; align-items: center; justify-content: space-between;">
+                    <h3 class="volt-card-title" style="display: flex; align-items: center;">
+                        <i data-feather="users" style="margin-right: 0.5rem; color: #8c05fa83;"></i>
+                        Usuarios Registrados
+                    </h3>
+                    <span class="volt-badge volt-badge-primary" style="background: #8a38cebb; color: #ffffff; border-radius: 0.9rem; font-weight: 600;">
+                        {{ usuarios|length }} usuarios
+                    </span>
+                </div>
+                <div class="volt-card-body">
+                    {% if usuarios %}
+                    <div class="volt-table-responsive" style="background: #ffffff; border-radius: 1rem; box-shadow: 0 1px 8px #6a03f14b;">
+                        <table class="volt-table" style="width: 100%; border-radius: 1rem; overflow: hidden;">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Usuario</th>
+                                    <th>Servidores</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for usuario in usuarios %}
+                                <tr>
+                                    <td>{{ usuario.id }}</td>
+                                    <td>
+                                        <div style="display: flex; align-items: center; gap: 0.7rem;">
+                                            <span style="background: #6f00ff3d; border-radius: 50%; padding: 0.35rem; display: flex; align-items: center; justify-content: center;">
+                                                <i data-feather="user" style="color: #1326c9a6; width: 18px; height: 18px;"></i>
+                                            </span>
+                                            <span style="font-weight: 500;">{{ usuario.username }}</span>
+                                            {% if usuario.id == session.usuario_id %}
+                                            <span class="volt-badge volt-badge-info" style="background: #1326c9a6; color: #ffffff; border-radius: 0.5rem; font-size: 0.85rem; margin-left: 0.5rem;">Tú</span>
+                                            {% endif %}
+                                        </div>
+                                    </td>
+                                    <td>
+                                        {% if usuario.servidores %}
+                                            {{ usuario.servidores|join(', ') }}
+                                        {% else %}
+                                            <span class="volt-text-muted">Sin acceso</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="volt-empty-state" style="text-align: center; padding: 2rem;">
+                        <div class="volt-empty-icon" style="font-size: 2.5rem; color: #8c05fa83;">
+                            <i data-feather="users"></i>
+                        </div>
+                        <h4 class="volt-empty-title" style="color: #8c05fa;">No hay usuarios registrados</h4>
+                        <p class="volt-empty-text">Crea tu primer usuario para comenzar</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Delete User Modal -->
+    <div id="deleteUserModal" class="volt-modal" style="display: none;">
+        <div class="volt-modal-backdrop" onclick="closeDeleteUserModal()"></div>
+        <div class="volt-modal-content">
+            <div class="volt-modal-header">
+                <h3 class="volt-modal-title">Confirmar Eliminación</h3>
+                <button class="volt-modal-close" onclick="closeDeleteUserModal()">×</button>
+            </div>
+            <div class="volt-modal-body">
+                <p>¿Estás seguro de que deseas eliminar el usuario <strong id="deleteUserName"></strong>?</p>
+                <p class="volt-text-danger">Esta acción no se puede deshacer.</p>
+            </div>
+            <div class="volt-modal-footer">
+                <button class="volt-btn volt-btn-secondary" onclick="closeDeleteUserModal()">Cancelar</button>
+                <a id="deleteUserLink" href="#" class="volt-btn volt-btn-danger">Eliminar Usuario</a>
+            </div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/volt-dashboard.js') }}"></script>
+    <script src="https://unpkg.com/feather-icons"></script>
+    <script>feather.replace();</script>
+    <script>
+        function toggleCreateUserForm() {
+            const form = document.getElementById('createUserForm');
+            if (form.style.display === 'none') {
+                form.style.display = 'block';
+                document.getElementById('username').focus();
+            } else {
+                form.style.display = 'none';
+                // Clear form
+                document.getElementById('username').value = '';
+                document.getElementById('password').value = '';
+                document.getElementById('confirm_password').value = '';
+            }
+        }
+
+        function confirmDeleteUser(userId, username) {
+            document.getElementById('deleteUserName').textContent = username;
+            document.getElementById('deleteUserLink').href = '/delete_user/' + userId;
+            document.getElementById('deleteUserModal').style.display = 'block';
+        }
+
+        function closeDeleteUserModal() {
+            document.getElementById('deleteUserModal').style.display = 'none';
+        }
+
+        // Form validation
+        document.getElementById('confirm_password').addEventListener('input', function() {
+            const password = document.getElementById('password').value;
+            const confirmPassword = this.value;
+            
+            if (password !== confirmPassword) {
+                this.setCustomValidity('Las contraseñas no coinciden');
+            } else {
+                this.setCustomValidity('');
+            }
+        });
+
+        // Close modal with Escape key
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') {
+                closeDeleteUserModal();
+            }
+        });
+    </script>
+</body>
+</html>

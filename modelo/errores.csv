@@ -1,0 +1,24 @@
+mensaje,error_tipo,solucion
+"Parse error: syntax error, unexpected T_STRING in /index.php on line 10",Sintaxis PHP,"Verifica comillas, punto y coma o estructura del código"
+PHP Fatal error: Call to undefined function mysqli_connect(),Sintaxis PHP,Asegúrate de que la función exista y esté habilitada en php.ini
+PHP Warning: Division by zero,Warning PHP,Evita dividir por cero usando validaciones previas
+PHP Notice: Undefined variable: usuario,Notice PHP,Declara e inicializa la variable antes de usarla
+PHP Deprecated: Methods with the same name as their class,Deprecado PHP,Actualiza el constructor al nuevo formato __construct()
+PHP Warning: Cannot modify header information - headers already sent,Warning PHP,Evita espacios o echo antes de usar header()
+PHP Fatal error: Maximum execution time of 30 seconds exceeded,Sintaxis PHP,Optimiza el código o incrementa el max_execution_time en php.ini
+PHP Warning: fopen(log.txt): failed to open stream: Permission denied,Warning PHP,Verifica los permisos del archivo o carpeta
+PHP Notice: A non well formed numeric value encountered,Notice PHP,Verifica que la variable tenga valor numérico válido
+PHP Notice: Use of undefined constant 'test',Notice PHP,Coloca comillas alrededor del nombre si es una cadena
+AH00558: apache2: Could not reliably determine the server's fully qualified domain name,Apache Config,Agrega ServerName localhost en httpd.conf
+403 Forbidden: You don't have permission to access /admin,Apache Permisos,Verifica permisos de carpeta o configuración de .htaccess
+404 Not Found: /favicon.ico,Ruta no encontrada,Asegúrate de que el archivo exista o elimina la referencia
+client denied by server configuration: /var/www/html/secret,Apache Permisos,Revisa restricciones en .htaccess o httpd.conf
+"AH00169: caught SIGTERM, shutting down",Apache Stop,Apache fue detenido manualmente o por error externo
+Unable to open logs,Apache Error,Verifica que los logs tengan permisos correctos y no estén en uso
+MySQL connect error: Access denied for user 'root'@'localhost',Conexión BD,"Verifica usuario, contraseña o privilegios en MySQL"
+MySQL server has gone away,Conexión BD,Revisa configuraciones de timeout o tamaño de paquetes
+Table 'mi_db.users' doesn't exist,Consulta BD,Verifica que la tabla exista y esté bien escrita
+Unknown column 'nombre' in 'field list',Consulta BD,Verifica que el campo exista en la tabla
+Fatal error: Can't open and lock privilege tables,MySQL Fatal,Revisa los archivos del sistema de privilegios de MySQL
+Can't connect to MySQL server,Conexión BD,El servicio puede no estar iniciado o bloqueado por firewall
+InnoDB: Table created with too many columns,MySQL InnoDB,Reduce la cantidad de columnas en la tabla
